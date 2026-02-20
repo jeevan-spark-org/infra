@@ -1,0 +1,27 @@
+parameters:
+  - name: azureServiceConnection
+    type: string
+  - name: deploymentLocation
+    type: string
+  - name: templateName
+    type: string
+  - name: templateFile
+    type: string
+  - name: parameterFile
+    type: string
+    default: ''
+
+steps:
+  - task: AzureCLI@2
+    displayName: Preview changes for ${{ parameters.templateName }} (What-If)
+    inputs:
+      azureSubscription: ${{ parameters.azureServiceConnection }}
+      scriptType: pscore
+      scriptLocation: scriptPath
+      scriptPath: scripts/Invoke-TemplateValidation.ps1
+      arguments: >-
+        -DeploymentName ${{ parameters.templateName }}-whatif-$(Build.BuildId)
+        -Location ${{ parameters.deploymentLocation }}
+        -TemplateFile ${{ parameters.templateFile }}
+        -ParametersFile ${{ parameters.parameterFile }}
+        -WhatIf

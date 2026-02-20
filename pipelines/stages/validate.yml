@@ -1,0 +1,30 @@
+parameters:
+  - name: azureServiceConnection
+    type: string
+  - name: deploymentLocation
+    type: string
+  - name: deploymentTemplates
+    type: object
+
+stages:
+  - stage: Validate
+    displayName: Validate Infrastructure Templates
+    jobs:
+      - job: Validate_Templates
+        displayName: Lint, Build, Validate Templates
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - checkout: self
+            clean: true
+
+          - template: ../steps/install-tools.yml
+
+          - ${{ each deploymentTemplate in parameters.deploymentTemplates }}:
+            - template: ../steps/validate-bicep.yml
+              parameters:
+                azureServiceConnection: ${{ parameters.azureServiceConnection }}
+                deploymentLocation: ${{ parameters.deploymentLocation }}
+                templateName: ${{ deploymentTemplate.name }}
+                templateFile: ${{ deploymentTemplate.templateFile }}
+                parameterFile: ${{ deploymentTemplate.parameterFile }}

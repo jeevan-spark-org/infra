@@ -1,0 +1,36 @@
+parameters:
+  - name: azureServiceConnection
+    type: string
+  - name: environmentName
+    type: string
+  - name: templateName
+    type: string
+  - name: templateFile
+    type: string
+  - name: parameterFile
+    type: string
+
+steps:
+  - task: qetza.replacetokens.replacetokens-task.replacetokens@6
+    name: initializeParameters
+    displayName: Initialize ${{ parameters.templateName }} parameter file
+    inputs:
+      telemetryOptout: true
+      tokenPattern: githubactions
+      sources: '$(Build.SourcesDirectory)/${{ parameters.parameterFile }} => $(Pipeline.Workspace)/${{ parameters.templateName }}.${{ parameters.environmentName }}.bicepparam'
+      missingVarAction: error
+      missingVarLog: error
+      logLevel: info
+
+  - task: AzureCLI@2
+    displayName: Deploy ${{ parameters.templateName }} infrastructure
+    inputs:
+      azureSubscription: ${{ parameters.azureServiceConnection }}
+      scriptType: pscore
+      scriptLocation: scriptPath
+      scriptPath: scripts/Invoke-TemplateDeployment.ps1
+      arguments: >-
+        -DeploymentName ${{ parameters.templateName }}-${{ parameters.environmentName }}-deploy-$(Build.BuildId)
+        -Location $(deploymentLocation)
+        -TemplateFile $(Build.SourcesDirectory)/${{ parameters.templateFile }}
+        -ParametersFile $(Pipeline.Workspace)/${{ parameters.templateName }}.${{ parameters.environmentName }}.bicepparam

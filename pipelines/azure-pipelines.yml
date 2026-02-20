@@ -1,0 +1,61 @@
+name: infra-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - pipelines/**
+      - templates/**
+      - scripts/**
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - pipelines/**
+      - templates/**
+      - scripts/**
+
+parameters:
+  - name: environments
+    type: object
+    default:
+      - name: dev
+        dependsOn: WhatIf
+      - name: prd
+        dependsOn: dev
+  - name: deploymentTemplates
+    type: object
+    default:
+      - name: aks
+        templateFile: templates/aks/main.bicep
+        parameterFile: templates/aks/main.bicepparam
+
+variables:
+  - template: variables/common.yml
+
+stages:
+  - template: stages/validate.yml
+    parameters:
+      azureServiceConnection: $(azureServiceConnection)
+      deploymentLocation: '$(deploymentLocation)'
+      deploymentTemplates: ${{ parameters.deploymentTemplates }}
+
+  - template: stages/whatif.yml
+    parameters:
+      azureServiceConnection: $(azureServiceConnection)
+      deploymentLocation: '$(deploymentLocation)'
+      deploymentTemplates: ${{ parameters.deploymentTemplates }}
+
+  - ${{ each env in parameters.environments }}:
+    - template: stages/deploy.yml
+      parameters:
+        environment:
+          name: ${{ env.name }}
+          dependsOn: ${{ env.dependsOn }}
+        azureServiceConnection: '$(azureServiceConnection)'
+        deploymentTemplates: ${{ parameters.deploymentTemplates }}

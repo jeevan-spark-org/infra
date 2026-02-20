@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/bicep/config/v1",
+  "analyzers": {
+    "core": {
+      "enabled": true,
+      "verbose": false,
+      "rules": {
+        "use-recent-module-versions": {
+          "level": "warning",
+          "message": "Review AVM module versions regularly and upgrade after validation."
+        },
+        "no-hardcoded-env-urls": {
+          "level": "warning"
+        },
+        "secure-secrets-in-params": {
+          "level": "error"
+        }
+      }
+    }
+  }
+}

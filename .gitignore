@@ -1,0 +1,14 @@
+# Bicep and ARM build artifacts
+**/*.bicep.json
+
+# Tooling and local state
+.bicep/
+.azure/
+.vscode/
+
+# Pipeline artifacts
+artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db

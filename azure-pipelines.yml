@@ -1,0 +1,2 @@
+extends:
+  template: pipelines/azure-pipelines.yml

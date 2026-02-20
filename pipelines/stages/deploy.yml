@@ -1,0 +1,39 @@
+parameters:
+  - name: environment
+    type: object
+  - name: azureServiceConnection
+    type: string
+  - name: deploymentTemplates
+    type: object
+
+stages:
+  - stage: ${{ parameters.environment.name }}
+    displayName: ${{ parameters.environment.name }}-deploy
+    dependsOn: ${{ parameters.environment.dependsOn }}
+    variables:
+      - template: ../variables/common.yml
+      - template: ../variables/${{ parameters.environment.name }}.yml
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: Deploy_Resources
+        displayName: Deploy Resource Templates
+        environment: infra-${{ parameters.environment.name }}
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  clean: true
+
+                - template: ../steps/install-tools.yml
+
+                - ${{ each deploymentTemplate in parameters.deploymentTemplates }}:
+                  - template: ../steps/deploy-template.yml
+                    parameters:
+                      azureServiceConnection: ${{ parameters.azureServiceConnection }}
+                      environmentName: ${{ parameters.environment.name }}
+                      templateName: ${{ deploymentTemplate.name }}
+                      templateFile: ${{ deploymentTemplate.templateFile }}
+                      parameterFile: ${{ deploymentTemplate.parameterFile }}

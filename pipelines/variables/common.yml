@@ -1,0 +1,10 @@
+variables:
+  # Azure DevOps service connection name (ARM)
+  azureServiceConnection: 'sc-azure-infra'
+
+  # Baseline location for pre-deploy validation/what-if stages
+  deploymentLocation: 'eastus'
+
+  # Shared Flux extension defaults
+  fluxExtensionName: 'flux'
+  fluxReleaseNamespace: 'flux-system'

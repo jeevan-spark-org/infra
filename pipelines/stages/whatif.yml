@@ -1,0 +1,32 @@
+parameters:
+  - name: azureServiceConnection
+    type: string
+  - name: deploymentLocation
+    type: string
+  - name: deploymentTemplates
+    type: object
+
+stages:
+  - stage: WhatIf
+    displayName: Preview Infrastructure Changes
+    dependsOn: Validate
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: WhatIf_Templates
+        displayName: Azure What-If (Templates)
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - checkout: self
+            clean: true
+
+          - template: ../steps/install-tools.yml
+
+          - ${{ each deploymentTemplate in parameters.deploymentTemplates }}:
+            - template: ../steps/whatif-template.yml
+              parameters:
+                azureServiceConnection: ${{ parameters.azureServiceConnection }}
+                deploymentLocation: ${{ parameters.deploymentLocation }}
+                templateName: ${{ deploymentTemplate.name }}
+                templateFile: ${{ deploymentTemplate.templateFile }}
+                parameterFile: ${{ deploymentTemplate.parameterFile }}

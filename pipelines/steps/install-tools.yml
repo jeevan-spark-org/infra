@@ -1,0 +1,12 @@
+steps:
+  - task: AzureCLI@2
+    displayName: Ensure Azure CLI and Bicep are available
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az version
+        az bicep version
+        az bicep upgrade
+        az bicep version
