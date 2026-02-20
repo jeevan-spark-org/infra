@@ -31,7 +31,7 @@ Documentation policy:
 Repository conventions:
 - Parent pipelines: pipelines
 - Bicep templates and parameters: templates
-- Automation scripts: scripts
+- Shared stages, steps, variables, and automation scripts: infra-pipeline-common
 - Repository-wide Copilot instructions: .github/copilot-instructions.md
 - Path-specific instructions: .github/instructions/*.instructions.md
 

@@ -5,7 +5,7 @@ This repository provisions Azure infrastructure (AKS) by using Bicep and Azure V
 ## Scope and structure
 - Keep parent pipeline definitions under pipelines.
 - Keep deployable Bicep and bicepparam files under templates.
-- Keep automation scripts under scripts.
+- Keep reusable stage templates, step templates, variable templates, and automation scripts in `infra-pipeline-common`.
 - Keep root azure-pipelines.yml as a lightweight wrapper that extends the parent pipeline in pipelines.
 - Keep pipeline step/template names generic (avoid resource-specific names like AKS in reusable files).
 
@@ -27,7 +27,7 @@ This repository provisions Azure infrastructure (AKS) by using Bicep and Azure V
 - Reuse stage and step templates instead of duplicating YAML.
 - Keep deployment inputs generic by passing an array of deployment templates (`name`, `templateFile`, `parameterFile`) and iterating in Validate/WhatIf/Deploy.
 - Keep service connections and environment names configurable through parameters or variables.
-- Keep environment names lowercase and align environment variable file names to lowercase (for example `pipelines/variables/dev.yml`).
+- Keep environment names lowercase and align environment variable file names to lowercase in `infra-pipeline-common` (for example `pipelines/variables/dev.yml`).
 
 ## Change safety
 - Keep edits focused and minimal.

@@ -4,10 +4,15 @@ Azure infrastructure repository for provisioning AKS on Azure using Bicep and Az
 
 ## Repository Structure
 
-- `pipelines/` - Parent and reusable pipeline templates.
+- `pipelines/` - Parent pipeline entrypoint.
 - `templates/` - Bicep and parameter templates (AVM-based).
-- `scripts/` - Reusable PowerShell scripts for CI/CD operations.
 - `.github/` - GitHub Copilot instructions, custom agent profile, and reusable prompt files.
+
+Shared pipeline assets are hosted in `infra-pipeline-common`:
+- `pipelines/stages/`
+- `pipelines/steps/`
+- `pipelines/variables/`
+- `scripts/`
 
 ## Pipeline Design
 
@@ -20,10 +25,12 @@ The parent pipeline accepts a `deploymentTemplates` object array where each entr
 
 Validate, What-If, and Deploy execute in loops across this array so multiple resource templates can be processed in one run.
 
-Environment variable templates:
+Shared variable templates are stored in repository `infra-pipeline-common`:
 - `pipelines/variables/common.yml`
 - `pipelines/variables/dev.yml`
 - `pipelines/variables/prd.yml`
+
+The pipeline imports `infra-pipeline-common` as an external repository resource (`pipeline_common`) and invokes stage templates from that repository.
 
 The pipeline is split into four ordered stages:
 1. **Validate** - Lint/build/validate Bicep.
@@ -49,7 +56,7 @@ AKS is configured with the AVM `fluxExtension` enabled (`flux-system` release na
 Parameter strategy:
 - One shared parameter file: `templates/aks/main.bicepparam`
 - `main.bicepparam` uses `#{{ variableName }}` placeholders for all parameter values
-- Environment-specific values are injected at deploy time from `pipelines/variables/dev.yml` and `pipelines/variables/prd.yml` via qetza ReplaceTokens initialization in the deploy stage
+- Environment-specific values are injected at deploy time from `infra-pipeline-common/pipelines/variables/dev.yml` and `infra-pipeline-common/pipelines/variables/prd.yml` via qetza ReplaceTokens initialization in the deploy stage
 - Complex values (arrays/objects/integers) are passed as strings and converted inside Bicep using `json()`/`int()` helper variables
 
 > Review and update module versions regularly after validation.
@@ -59,7 +66,7 @@ Parameter strategy:
 1. Create an Azure Resource Manager service connection with least privilege.
 2. Configure pipeline variables or variable groups:
    - `azureServiceConnection`
-   - environment-specific values are provided in `pipelines/variables/dev.yml` and `pipelines/variables/prd.yml`
+   - environment-specific values are provided in `infra-pipeline-common/pipelines/variables/dev.yml` and `infra-pipeline-common/pipelines/variables/prd.yml`
 3. Configure environment approvals/checks for deployment environments.
 
 ## Security Notes

@@ -20,6 +20,13 @@ pr:
       - templates/**
       - scripts/**
 
+resources:
+  repositories:
+    - repository: pipeline_common
+      type: github
+      endpoint: sc-github
+      name: jeevankuduvaravindran/infra-pipeline-common
+
 parameters:
   - name: environments
     type: object
@@ -36,23 +43,23 @@ parameters:
         parameterFile: templates/aks/main.bicepparam
 
 variables:
-  - template: variables/common.yml
+  - template: pipelines/variables/common.yml@pipeline_common
 
 stages:
-  - template: stages/validate.yml
+  - template: pipelines/stages/validate.yml@pipeline_common
     parameters:
       azureServiceConnection: $(azureServiceConnection)
       deploymentLocation: '$(deploymentLocation)'
       deploymentTemplates: ${{ parameters.deploymentTemplates }}
 
-  - template: stages/whatif.yml
+  - template: pipelines/stages/whatif.yml@pipeline_common
     parameters:
       azureServiceConnection: $(azureServiceConnection)
       deploymentLocation: '$(deploymentLocation)'
       deploymentTemplates: ${{ parameters.deploymentTemplates }}
 
   - ${{ each env in parameters.environments }}:
-    - template: stages/deploy.yml
+    - template: pipelines/stages/deploy.yml@pipeline_common
       parameters:
         environment:
           name: ${{ env.name }}
