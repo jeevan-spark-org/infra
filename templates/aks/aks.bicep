@@ -1,19 +1,10 @@
 targetScope = 'subscription'
 
-@description('Azure region for all regional resources.')
-param location string
-
-@description('Resource group name for AKS platform resources.')
-param resourceGroupName string
-
 @description('AKS cluster resource name.')
 param aksClusterName string
 
-@description('Log Analytics workspace name.')
-param logAnalyticsWorkspaceName string
-
-@description('Virtual network name for AKS.')
-param virtualNetworkName string
+@description('AKS cluster SKU tier. Supported values include Free and Standard.')
+param aksSkuTier string
 
 @description('Subnet name for AKS node pools.')
 param aksSubnetName string
@@ -21,20 +12,11 @@ param aksSubnetName string
 @description('Authorized IP ranges for AKS API server as a JSON array string (for example: ["203.0.113.10/32"]).')
 param apiServerAuthorizedIpRanges string
 
-@description('AKS cluster SKU tier. Supported values include Free and Standard.')
-param aksSkuTier string
+@description('Flux configurations as a JSON array string that defines Git source and kustomization reconciliation.')
+param fluxConfigurations string
 
-@description('System node pool VM size.')
-param systemNodePoolVmSize string
-
-@description('Initial node count for system node pool.')
-param systemNodeCount string
-
-@description('User node pool VM size.')
-param userNodePoolVmSize string
-
-@description('Minimum nodes for user pool autoscaling.')
-param userNodePoolMinCount string
+@description('Flux extension configuration settings as a JSON object string (for example: {"setKubeServiceHostFqdn":"true"}).')
+param fluxExtensionConfigurationSettings string
 
 @description('Name of the AKS Flux extension.')
 param fluxExtensionName string
@@ -42,17 +24,51 @@ param fluxExtensionName string
 @description('Namespace where Flux extension release is installed.')
 param fluxReleaseNamespace string
 
-@description('Flux extension configuration settings as a JSON object string (for example: {"setKubeServiceHostFqdn":"true"}).')
-param fluxExtensionConfigurationSettings string
+@description('Azure region for all regional resources.')
+param location string
 
-@description('Flux configurations as a JSON array string that defines Git source and kustomization reconciliation.')
-param fluxConfigurations string
+@description('Log Analytics workspace name.')
+param logAnalyticsWorkspaceName string
+
+@description('Resource group name for AKS platform resources.')
+param resourceGroupName string
+
+@description('Whether autoscaling is enabled for the system node pool (true/false).')
+param systemNodePoolEnableAutoScaling string
+
+@description('Maximum nodes for system node pool autoscaling.')
+param systemNodePoolMaxCount string
+
+@description('Minimum nodes for system node pool autoscaling.')
+param systemNodePoolMinCount string
+
+@description('System node pool VM size.')
+param systemNodePoolVmSize string
 
 @description('Tags applied to all taggable resources.')
 param tags string
 
-var systemNodeCountInt = int(systemNodeCount)
+@description('Whether autoscaling is enabled for the user node pool (true/false).')
+param userNodePoolEnableAutoScaling string
+
+@description('Maximum nodes for user pool autoscaling.')
+param userNodePoolMaxCount string
+
+@description('Minimum nodes for user pool autoscaling.')
+param userNodePoolMinCount string
+
+@description('User node pool VM size.')
+param userNodePoolVmSize string
+
+@description('Virtual network name for AKS.')
+param virtualNetworkName string
+
+var systemNodePoolMinCountInt = int(systemNodePoolMinCount)
+var systemNodePoolMaxCountInt = int(systemNodePoolMaxCount)
+var systemNodePoolEnableAutoScalingBool = toLower(systemNodePoolEnableAutoScaling) == 'true'
 var userNodePoolMinCountInt = int(userNodePoolMinCount)
+var userNodePoolMaxCountInt = int(userNodePoolMaxCount)
+var userNodePoolEnableAutoScalingBool = toLower(userNodePoolEnableAutoScaling) == 'true'
 var tagsObject = json(tags)
 var fluxExtensionConfigurationSettingsObject = json(fluxExtensionConfigurationSettings)
 var fluxConfigurationsArray = json(fluxConfigurations)
@@ -118,7 +134,15 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
         mode: 'System'
         type: 'VirtualMachineScaleSets'
         vmSize: systemNodePoolVmSize
-        count: systemNodeCountInt
+        enableAutoScaling: systemNodePoolEnableAutoScalingBool
+        ...(systemNodePoolEnableAutoScalingBool
+          ? {
+              minCount: systemNodePoolMinCountInt
+              maxCount: systemNodePoolMaxCountInt
+            }
+          : {
+              count: systemNodePoolMinCountInt
+            })
         maxPods: 50
         osType: 'Linux'
         vnetSubnetResourceId: aksSubnet.id
@@ -130,8 +154,15 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
         mode: 'User'
         type: 'VirtualMachineScaleSets'
         vmSize: userNodePoolVmSize
-        enableAutoScaling: false
-        count: userNodePoolMinCountInt
+        enableAutoScaling: userNodePoolEnableAutoScalingBool
+        ...(userNodePoolEnableAutoScalingBool
+          ? {
+              minCount: userNodePoolMinCountInt
+              maxCount: userNodePoolMaxCountInt
+            }
+          : {
+              count: userNodePoolMinCountInt
+            })
         maxPods: 50
         osType: 'Linux'
         vnetSubnetResourceId: aksSubnet.id

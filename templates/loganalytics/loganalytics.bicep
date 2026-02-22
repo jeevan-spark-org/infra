@@ -3,11 +3,11 @@ targetScope = 'subscription'
 @description('Azure region for all regional resources.')
 param location string
 
-@description('Resource group name for shared platform resources.')
-param resourceGroupName string
-
 @description('Log Analytics workspace name.')
 param logAnalyticsWorkspaceName string
+
+@description('Resource group name for shared platform resources.')
+param resourceGroupName string
 
 @description('Tags applied to all taggable resources.')
 param tags string

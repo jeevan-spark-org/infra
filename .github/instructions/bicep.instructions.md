@@ -8,6 +8,7 @@ applyTo: "templates/**/*.bicep,templates/**/*.bicepparam,bicepconfig.json"
 
 - Prefer AVM modules from br/public:avm/... where available.
 - Pin AVM module versions explicitly.
+- Keep `.bicep` parameter declarations in alphabetical order.
 - Use clear parameter descriptions and safe defaults for local execution.
 - Keep templates idempotent and environment-agnostic.
 - Emit explicit outputs used by pipelines.

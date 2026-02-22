@@ -1,10 +1,7 @@
 targetScope = 'subscription'
 
-@description('Azure region for all regional resources.')
-param location string
-
-@description('Resource group name for ACR resources.')
-param resourceGroupName string
+@description('ACR public IP allowlist rules as JSON array string (for example: [{"action":"Allow","value":"203.0.113.10/32"}]).')
+param acrAllowedIpRules string
 
 @description('Azure Container Registry name (5-50 alphanumeric).')
 param acrName string
@@ -12,17 +9,20 @@ param acrName string
 @description('SKU for Azure Container Registry.')
 param acrSku string
 
-@description('Virtual network name used for shared platform networking.')
-param virtualNetworkName string
+@description('Azure region for all regional resources.')
+param location string
 
 @description('Subnet name used for ACR private endpoint integration.')
 param privateEndpointSubnetName string
 
-@description('ACR public IP allowlist rules as JSON array string (for example: [{"action":"Allow","value":"203.0.113.10/32"}]).')
-param acrAllowedIpRules string
+@description('Resource group name for ACR resources.')
+param resourceGroupName string
 
 @description('Tags applied to all taggable resources.')
 param tags string
+
+@description('Virtual network name used for shared platform networking.')
+param virtualNetworkName string
 
 var tagsObject = json(tags)
 var acrAllowedIpRulesArray = json(acrAllowedIpRules)

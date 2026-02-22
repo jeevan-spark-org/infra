@@ -1,31 +1,31 @@
 targetScope = 'subscription'
 
+@description('Subnet CIDR for AKS node pools.')
+param aksSubnetAddressPrefix string
+
+@description('Subnet name for AKS node pools.')
+param aksSubnetName string
+
 @description('Azure region for all regional resources.')
 param location string
 
+@description('Subnet CIDR for private endpoints subnet.')
+param privateEndpointSubnetAddressPrefix string
+
+@description('Subnet name for private endpoints (for example ACR private endpoint).')
+param privateEndpointSubnetName string
+
 @description('Resource group name for shared platform resources.')
 param resourceGroupName string
+
+@description('Tags applied to all taggable resources.')
+param tags string
 
 @description('Virtual network name for shared platform resources.')
 param virtualNetworkName string
 
 @description('Address space for shared virtual network.')
 param vnetAddressPrefixes string
-
-@description('Subnet name for AKS node pools.')
-param aksSubnetName string
-
-@description('Subnet CIDR for AKS node pools.')
-param aksSubnetAddressPrefix string
-
-@description('Subnet name for private endpoints (for example ACR private endpoint).')
-param privateEndpointSubnetName string
-
-@description('Subnet CIDR for private endpoints subnet.')
-param privateEndpointSubnetAddressPrefix string
-
-@description('Tags applied to all taggable resources.')
-param tags string
 
 var vnetAddressPrefixesArray = json(vnetAddressPrefixes)
 var tagsObject = json(tags)

@@ -82,7 +82,7 @@ Naming standard:
 
 Language-specific guidance:
 
-- Bicep: Prefer AVM modules and pin versions explicitly. For tokenized bicepparam placeholders, accept string params and convert to typed helper vars in Bicep before resource usage.
+- Bicep: Prefer AVM modules and pin versions explicitly. Keep `.bicep` parameter declarations in alphabetical order. For tokenized bicepparam placeholders, accept string params and convert to typed helper vars in Bicep before resource usage.
 - PowerShell: Use strict mode and fail-fast error handling. Keep scripts non-interactive and suitable for CI.
 - Azure Pipelines: Reuse stage and step templates. Keep shared steps generic (not resource-specific) and avoid inline secrets or hardcoded environment-specific values. Whenever writing or editing pipeline YAML, ensure files are correctly formatted with consistent indentation.
 - Flux GitOps: Keep Flux extension enabled for AKS and parameterize environment-specific GitOps settings via templates/variables.

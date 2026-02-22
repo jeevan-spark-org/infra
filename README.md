@@ -93,6 +93,7 @@ Parameter strategy:
 - `aks.bicepparam` uses `#{{ variableName }}` placeholders for all parameter values
 - Environment-specific values are injected at deploy time from `infra-pipeline-common/pipelines/variables/dev.yml` and `infra-pipeline-common/pipelines/variables/prd.yml` via qetza ReplaceTokens initialization in the deploy stage
 - Complex values (arrays/objects/integers) are passed as strings and converted inside Bicep using `json()`/`int()` helper variables
+- AKS autoscaling is parameterized separately for system and user node pools (`systemNodePoolEnableAutoScaling`, `userNodePoolEnableAutoScaling`) with separate min/max settings per pool (`systemNodePoolMinCount`, `systemNodePoolMaxCount`, `userNodePoolMinCount`, `userNodePoolMaxCount`).
 
 > Review and update module versions regularly after validation.
 
