@@ -24,8 +24,8 @@ resources:
   repositories:
     - repository: pipeline_common
       type: github
-      endpoint: sc-github
-      name: jeevankuduvaravindran/infra-pipeline-common
+      endpoint: jeevan-spark-org
+      name: jeevan-spark-org/infra-pipeline-common
 
 parameters:
   - name: environments
@@ -35,34 +35,26 @@ parameters:
         dependsOn: WhatIf
       - name: prd
         dependsOn: dev
-  - name: deploymentTemplates
-    type: object
-    default:
-      - name: aks
-        templateFile: templates/aks/main.bicep
-        parameterFile: templates/aks/main.bicepparam
 
 variables:
   - template: pipelines/variables/common.yml@pipeline_common
 
-stages:
-  - template: pipelines/stages/validate.yml@pipeline_common
-    parameters:
-      azureServiceConnection: $(azureServiceConnection)
-      deploymentLocation: '$(deploymentLocation)'
-      deploymentTemplates: ${{ parameters.deploymentTemplates }}
-
-  - template: pipelines/stages/whatif.yml@pipeline_common
-    parameters:
-      azureServiceConnection: $(azureServiceConnection)
-      deploymentLocation: '$(deploymentLocation)'
-      deploymentTemplates: ${{ parameters.deploymentTemplates }}
-
-  - ${{ each env in parameters.environments }}:
-    - template: pipelines/stages/deploy.yml@pipeline_common
-      parameters:
-        environment:
-          name: ${{ env.name }}
-          dependsOn: ${{ env.dependsOn }}
-        azureServiceConnection: '$(azureServiceConnection)'
-        deploymentTemplates: ${{ parameters.deploymentTemplates }}
+extends:
+  template: pipelines/extends/infra-deploy.yml@pipeline_common
+  parameters:
+    environments: ${{ parameters.environments }}
+    azureServiceConnection: $(azureServiceConnection)
+    location: '$(location)'
+    deploymentTemplates:
+      - name: network
+        templateFile: templates/network/main.bicep
+        parameterFile: templates/network/main.bicepparam
+      - name: loganalytics
+        templateFile: templates/loganalytics/main.bicep
+        parameterFile: templates/loganalytics/main.bicepparam
+      - name: acr
+        templateFile: templates/acr/main.bicep
+        parameterFile: templates/acr/main.bicepparam
+      - name: aks
+        templateFile: templates/aks/main.bicep
+        parameterFile: templates/aks/main.bicepparam

@@ -1,0 +1,11 @@
+using 'main.bicep'
+
+param location = '#{{ location }}'
+param resourceGroupName = '#{{ resourceGroupName }}'
+param virtualNetworkName = '#{{ virtualNetworkName }}'
+param vnetAddressPrefixes = '#{{ vnetAddressPrefixes }}'
+param aksSubnetName = '#{{ aksSubnetName }}'
+param aksSubnetAddressPrefix = '#{{ aksSubnetAddressPrefix }}'
+param privateEndpointSubnetName = '#{{ privateEndpointSubnetName }}'
+param privateEndpointSubnetAddressPrefix = '#{{ privateEndpointSubnetAddressPrefix }}'
+param tags = '#{{ tags }}'

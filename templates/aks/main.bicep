@@ -1,95 +1,81 @@
 targetScope = 'subscription'
 
 @description('Azure region for all regional resources.')
-param location string = deployment().location
-
-@description('Environment short name. Example: dev, test, prod.')
-param environmentName string = 'dev'
+param location string
 
 @description('Resource group name for AKS platform resources.')
-param resourceGroupName string = 'rg-aks-${environmentName}'
+param resourceGroupName string
 
 @description('AKS cluster resource name.')
-param aksClusterName string = 'aks-${environmentName}'
+param aksClusterName string
 
 @description('Log Analytics workspace name.')
-param logAnalyticsWorkspaceName string = 'law-aks-${environmentName}'
+param logAnalyticsWorkspaceName string
 
 @description('Virtual network name for AKS.')
-param virtualNetworkName string = 'vnet-aks-${environmentName}'
-
-@description('Address space for AKS VNet.')
-param vnetAddressPrefixes string = '["10.40.0.0/16"]'
+param virtualNetworkName string
 
 @description('Subnet name for AKS node pools.')
-param aksSubnetName string = 'snet-aks-nodes'
+param aksSubnetName string
 
-@description('Subnet CIDR for AKS node pools.')
-param aksSubnetAddressPrefix string = '10.40.0.0/20'
+@description('Authorized IP ranges for AKS API server as a JSON array string (for example: ["203.0.113.10/32"]).')
+param apiServerAuthorizedIpRanges string
 
 @description('System node pool VM size.')
-param systemNodePoolVmSize string = 'Standard_D4ds_v5'
+param systemNodePoolVmSize string
 
 @description('Initial node count for system node pool.')
-param systemNodeCount string = '3'
+param systemNodeCount string
 
 @description('User node pool VM size.')
-param userNodePoolVmSize string = 'Standard_D4ds_v5'
+param userNodePoolVmSize string
 
 @description('Minimum nodes for user pool autoscaling.')
-param userNodePoolMinCount string = '2'
+param userNodePoolMinCount string
 
 @description('Maximum nodes for user pool autoscaling.')
-param userNodePoolMaxCount string = '5'
+param userNodePoolMaxCount string
 
 @description('Name of the AKS Flux extension.')
-param fluxExtensionName string = 'flux'
+param fluxExtensionName string
 
 @description('Namespace where Flux extension release is installed.')
-param fluxReleaseNamespace string = 'flux-system'
+param fluxReleaseNamespace string
+
+@description('Flux extension configuration settings as a JSON object string (for example: {"setKubeServiceHostFqdn":"true"}).')
+param fluxExtensionConfigurationSettings string
+
+@description('Flux configurations as a JSON array string that defines Git source and kustomization reconciliation.')
+param fluxConfigurations string
 
 @description('Tags applied to all taggable resources.')
-param tags string = '{"environment":"dev","workload":"platform","managedBy":"azure-pipelines"}'
+param tags string
 
-var vnetAddressPrefixesArray = json(vnetAddressPrefixes)
 var systemNodeCountInt = int(systemNodeCount)
 var userNodePoolMinCountInt = int(userNodePoolMinCount)
 var userNodePoolMaxCountInt = int(userNodePoolMaxCount)
 var tagsObject = json(tags)
+var fluxExtensionConfigurationSettingsObject = json(fluxExtensionConfigurationSettings)
+var fluxConfigurationsArray = json(fluxConfigurations)
+var apiServerAuthorizedIpRangesArray = json(apiServerAuthorizedIpRanges)
 
-resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
+resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
   name: resourceGroupName
-  location: location
-  tags: tagsObject
 }
 
-@description('Deploy a virtual network through AVM.')
-module vnet 'br/public:avm/res/network/virtual-network:0.7.2' = {
-  name: 'vnet-${uniqueString(subscription().id, resourceGroupName)}'
+resource vnet 'Microsoft.Network/virtualNetworks@2024-07-01' existing = {
   scope: rg
-  params: {
-    name: virtualNetworkName
-    location: location
-    addressPrefixes: vnetAddressPrefixesArray
-    subnets: [
-      {
-        name: aksSubnetName
-        addressPrefix: aksSubnetAddressPrefix
-      }
-    ]
-    tags: tagsObject
-  }
+  name: virtualNetworkName
 }
 
-@description('Deploy a Log Analytics workspace through AVM for AKS monitoring.')
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.15.0' = {
-  name: 'law-${uniqueString(subscription().id, resourceGroupName)}'
+resource aksSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-07-01' existing = {
+  parent: vnet
+  name: aksSubnetName
+}
+
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   scope: rg
-  params: {
-    name: logAnalyticsWorkspaceName
-    location: location
-    tags: tagsObject
-  }
+  name: logAnalyticsWorkspaceName
 }
 
 @description('Deploy AKS through AVM managed-cluster module.')
@@ -115,11 +101,16 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
     networkPluginMode: 'overlay'
     networkPolicy: 'azure'
     omsAgentEnabled: true
-    monitoringWorkspaceResourceId: logAnalytics.outputs.resourceId
+    monitoringWorkspaceResourceId: logAnalyticsWorkspace.id
     publicNetworkAccess: 'Enabled'
+    apiServerAccessProfile: {
+      authorizedIPRanges: apiServerAuthorizedIpRangesArray
+    }
     fluxExtension: {
       name: fluxExtensionName
       releaseNamespace: fluxReleaseNamespace
+      configurationSettings: fluxExtensionConfigurationSettingsObject
+      fluxConfigurations: fluxConfigurationsArray
     }
     primaryAgentPoolProfiles: [
       {
@@ -130,7 +121,7 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
         count: systemNodeCountInt
         maxPods: 50
         osType: 'Linux'
-        vnetSubnetResourceId: vnet.outputs.subnetResourceIds[0]
+        vnetSubnetResourceId: aksSubnet.id
       }
     ]
     agentPools: [
@@ -144,7 +135,7 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
         maxCount: userNodePoolMaxCountInt
         maxPods: 50
         osType: 'Linux'
-        vnetSubnetResourceId: vnet.outputs.subnetResourceIds[0]
+        vnetSubnetResourceId: aksSubnet.id
       }
     ]
   }

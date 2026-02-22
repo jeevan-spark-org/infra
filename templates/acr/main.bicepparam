@@ -1,0 +1,10 @@
+using 'main.bicep'
+
+param location = '#{{ location }}'
+param resourceGroupName = '#{{ resourceGroupName }}'
+param acrName = '#{{ acrName }}'
+param acrSku = '#{{ acrSku }}'
+param virtualNetworkName = '#{{ virtualNetworkName }}'
+param privateEndpointSubnetName = '#{{ privateEndpointSubnetName }}'
+param acrAllowedIpRules = '#{{ acrAllowedIpRules }}'
+param tags = '#{{ tags }}'

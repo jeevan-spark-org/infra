@@ -1,14 +1,12 @@
 using 'main.bicep'
 
 param location = '#{{ location }}'
-param environmentName = '#{{ environmentNameValue }}'
 param resourceGroupName = '#{{ resourceGroupName }}'
 param aksClusterName = '#{{ aksClusterName }}'
 param logAnalyticsWorkspaceName = '#{{ logAnalyticsWorkspaceName }}'
 param virtualNetworkName = '#{{ virtualNetworkName }}'
-param vnetAddressPrefixes = '#{{ vnetAddressPrefixes }}'
 param aksSubnetName = '#{{ aksSubnetName }}'
-param aksSubnetAddressPrefix = '#{{ aksSubnetAddressPrefix }}'
+param apiServerAuthorizedIpRanges = '#{{ apiServerAuthorizedIpRanges }}'
 
 param systemNodePoolVmSize = '#{{ systemNodePoolVmSize }}'
 param systemNodeCount = '#{{ systemNodeCount }}'
@@ -18,5 +16,7 @@ param userNodePoolMaxCount = '#{{ userNodePoolMaxCount }}'
 
 param fluxExtensionName = '#{{ fluxExtensionName }}'
 param fluxReleaseNamespace = '#{{ fluxReleaseNamespace }}'
+param fluxExtensionConfigurationSettings = '#{{ fluxExtensionConfigurationSettings }}'
+param fluxConfigurations = '#{{ fluxConfigurations }}'
 
 param tags = '#{{ tags }}'
