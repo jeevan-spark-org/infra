@@ -7,6 +7,7 @@ param logAnalyticsWorkspaceName = '#{{ logAnalyticsWorkspaceName }}'
 param virtualNetworkName = '#{{ virtualNetworkName }}'
 param aksSubnetName = '#{{ aksSubnetName }}'
 param apiServerAuthorizedIpRanges = '#{{ apiServerAuthorizedIpRanges }}'
+param aksSkuTier = '#{{ aksSkuTier }}'
 
 param systemNodePoolVmSize = '#{{ systemNodePoolVmSize }}'
 param systemNodeCount = '#{{ systemNodeCount }}'

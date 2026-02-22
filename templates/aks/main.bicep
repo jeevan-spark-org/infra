@@ -21,6 +21,9 @@ param aksSubnetName string
 @description('Authorized IP ranges for AKS API server as a JSON array string (for example: ["203.0.113.10/32"]).')
 param apiServerAuthorizedIpRanges string
 
+@description('AKS cluster SKU tier. Supported values include Free and Standard.')
+param aksSkuTier string
+
 @description('System node pool VM size.')
 param systemNodePoolVmSize string
 
@@ -106,6 +109,7 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
     apiServerAccessProfile: {
       authorizedIPRanges: apiServerAuthorizedIpRangesArray
     }
+    skuTier: aksSkuTier
     fluxExtension: {
       name: fluxExtensionName
       releaseNamespace: fluxReleaseNamespace

@@ -78,6 +78,7 @@ AKS template now contains only managed cluster deployment logic. Networking and 
 Network access controls are parameterized per environment:
 
 - AKS API server access is restricted with `apiServerAuthorizedIpRanges`.
+- AKS control-plane pricing tier is parameterized with `aksSkuTier` (dev: `Free`, prd: `Standard`).
 - ACR public endpoint is enabled with selected-network firewall rules via `acrAllowedIpRules`.
 - ACR is VNet integrated through a private endpoint on `privateEndpointSubnetName`.
 
