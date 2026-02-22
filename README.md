@@ -54,8 +54,8 @@ The pipeline is split into four ordered stages:
 3. **dev-deploy** - Deploy AKS to dev environment.
 4. **prd-deploy** - Deploy AKS to prd environment.
 
-During **Validate**, tokenized `.bicepparam` files are transformed per environment into a generated `transformed/<env>/...` structure that includes both `.bicep` and resolved `.bicepparam` files, then published as pipeline artifacts (`transformed-dev`, `transformed-prd`).
-**WhatIf** and **Deploy** download these artifacts at stage start and use the transformed files directly.
+During **Validate**, tokenized `.bicepparam` files are transformed per environment and template into generated artifacts that include both `.bicep` and resolved `.bicepparam` files, published as `transformed-<env>-<template>`.
+**WhatIf** and **Deploy** download the matching transformed artifact in each template iteration and use those transformed files directly.
 
 The deploy stage template is iterated with a loop over fixed environments (dev then prd), using environment names directly.
 
