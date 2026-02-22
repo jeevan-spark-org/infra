@@ -47,15 +47,14 @@ Deployment order inside each environment is:
 3. `templates/acr/acr.bicep` (ACR integrated to shared VNet via private endpoint)
 4. `templates/aks/aks.bicep` (managed cluster only, consuming existing VNet and workspace)
 
-The pipeline is split into four ordered stages:
+The pipeline runs **Validate** first, then executes environment-specific What-If and Deploy flow based on each environment's `performWhatIf` flag in the shared `environments` object (default: dev=`false`, prd=`true`).
 
 1. **Validate** - Lint/build/validate Bicep.
-2. **WhatIf** - Preview Azure changes.
-3. **dev-deploy** - Deploy AKS to dev environment.
-4. **prd-deploy** - Deploy AKS to prd environment.
+2. **env-whatif** - Runs only when `performWhatIf: true` for that environment.
+3. **env-deploy** - Runs after WhatIf when enabled, otherwise after the environment's configured predecessor.
 
-During **Validate**, tokenized `.bicepparam` files are transformed per environment and template into generated artifacts that include both `.bicep` and resolved `.bicepparam` files, published as `transformed-<env>-<template>`.
-**WhatIf** and **Deploy** download the matching transformed artifact in each template iteration and use those transformed files directly.
+During **Validate**, tokenized `.bicepparam` files are transformed per environment and template under `transformed-artifacts/<env>/<template>/...`, then published as one artifact per environment (`transformed-<env>`).
+**WhatIf** and **Deploy** download the environment artifact once per environment job and use the transformed files from that directory.
 
 The deploy stage template is iterated with a loop over fixed environments (dev then prd), using environment names directly.
 
