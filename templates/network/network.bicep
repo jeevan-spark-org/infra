@@ -27,7 +27,7 @@ param virtualNetworkName string
 @description('Address space for shared virtual network.')
 param vnetAddressPrefixes string
 
-var vnetAddressPrefixesArray = json(vnetAddressPrefixes)
+var vnetAddressPrefixesArray = [for addressPrefix in split(replace(replace(replace(vnetAddressPrefixes, '[', ''), ']', ''), '"', ''), ','): trim(addressPrefix)]
 var tagsObject = json(tags)
 
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
