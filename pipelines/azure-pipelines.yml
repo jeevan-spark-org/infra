@@ -27,22 +27,12 @@ resources:
       endpoint: jeevan-spark-org
       name: jeevan-spark-org/infra-pipeline-common
 
-parameters:
-  - name: environments
-    type: object
-    default:
-      - name: dev
-        dependsOn: WhatIf
-      - name: prd
-        dependsOn: dev
-
 variables:
   - template: pipelines/variables/common.yml@pipeline_common
 
 extends:
   template: pipelines/extends/infra-deploy.yml@pipeline_common
   parameters:
-    environments: ${{ parameters.environments }}
     azureServiceConnection: $(azureServiceConnection)
     location: '$(location)'
     deploymentTemplates:
