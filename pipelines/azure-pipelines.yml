@@ -37,14 +37,14 @@ extends:
     location: '$(location)'
     deploymentTemplates:
       - name: network
-        templateFile: templates/network/network.bicep
-        parameterFile: templates/network/network.bicepparam
+        templateFile: infra/templates/network/network.bicep
+        parameterFile: infra/templates/network/network.bicepparam
       - name: loganalytics
-        templateFile: templates/loganalytics/loganalytics.bicep
-        parameterFile: templates/loganalytics/loganalytics.bicepparam
+        templateFile: infra/templates/loganalytics/loganalytics.bicep
+        parameterFile: infra/templates/loganalytics/loganalytics.bicepparam
       - name: acr
-        templateFile: templates/acr/acr.bicep
-        parameterFile: templates/acr/acr.bicepparam
+        templateFile: infra/templates/acr/acr.bicep
+        parameterFile: infra/templates/acr/acr.bicepparam
       - name: aks
-        templateFile: templates/aks/aks.bicep
-        parameterFile: templates/aks/aks.bicepparam
+        templateFile: infra/templates/aks/aks.bicep
+        parameterFile: infra/templates/aks/aks.bicepparam
