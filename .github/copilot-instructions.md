@@ -20,6 +20,7 @@ This repository provisions Azure infrastructure (AKS) by using Bicep and Azure V
 - For tokenized bicepparam files, treat incoming placeholder values as strings and convert in Bicep using helper variables (for example `int()` and `json()`).
 - Keep bicepparam files placeholder-only and free of inline conversion functions.
 - Validate and preview changes before deployment (build, validate, what-if).
+- After running local Bicep builds, remove generated compiled JSON artifacts (for example `templates/**/<name>.json`) before finishing the task.
 - Keep outputs explicit for downstream pipeline use.
 
 ## Pipeline quality

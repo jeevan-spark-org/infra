@@ -46,6 +46,7 @@ Repository conventions:
 Validation expectations:
 
 - Validate Bicep and pipeline updates before finalizing.
+- When compiling Bicep files locally, delete generated compiled JSON artifacts (for example `templates/**/<name>.json`) before completing the task.
 - Preserve the Validate -> WhatIf -> Deploy stage separation.
 - Keep service connection and environment configuration parameterized.
 - Use a deployment template array pattern (`name`, `templateFile`, `parameterFile`) and loop over it in Validate/WhatIf/Deploy.

@@ -1,4 +1,4 @@
-using 'main.bicep'
+using 'acr.bicep'
 
 param location = '#{{ location }}'
 param resourceGroupName = '#{{ resourceGroupName }}'

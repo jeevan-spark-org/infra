@@ -42,10 +42,10 @@ The pipeline imports `infra-pipeline-common` as an external repository resource 
 
 Deployment order inside each environment is:
 
-1. `templates/network/main.bicep` (shared VNet + subnets)
-2. `templates/loganalytics/main.bicep` (shared Log Analytics workspace)
-3. `templates/acr/main.bicep` (ACR integrated to shared VNet via private endpoint)
-4. `templates/aks/main.bicep` (managed cluster only, consuming existing VNet and workspace)
+1. `templates/network/network.bicep` (shared VNet + subnets)
+2. `templates/loganalytics/loganalytics.bicep` (shared Log Analytics workspace)
+3. `templates/acr/acr.bicep` (ACR integrated to shared VNet via private endpoint)
+4. `templates/aks/aks.bicep` (managed cluster only, consuming existing VNet and workspace)
 
 The pipeline is split into four ordered stages:
 
@@ -65,9 +65,9 @@ Supported deployment environments:
 
 This repo currently includes:
 
-- `templates/network/main.bicep` (Virtual Network and subnets)
-- `templates/loganalytics/main.bicep` (Log Analytics workspace)
-- `templates/acr/main.bicep` (Azure Container Registry)
+- `templates/network/network.bicep` (Virtual Network and subnets)
+- `templates/loganalytics/loganalytics.bicep` (Log Analytics workspace)
+- `templates/acr/acr.bicep` (Azure Container Registry)
 - `br/public:avm/res/container-service/managed-cluster:0.12.0`
 - `br/public:avm/res/container-registry/registry:0.10.0`
 - `br/public:avm/res/network/virtual-network:0.7.2`
@@ -89,8 +89,8 @@ Flux app deployment in this setup expects OCI Helm charts and container images p
 
 Parameter strategy:
 
-- One shared parameter file: `templates/aks/main.bicepparam`
-- `main.bicepparam` uses `#{{ variableName }}` placeholders for all parameter values
+- One shared parameter file: `templates/aks/aks.bicepparam`
+- `aks.bicepparam` uses `#{{ variableName }}` placeholders for all parameter values
 - Environment-specific values are injected at deploy time from `infra-pipeline-common/pipelines/variables/dev.yml` and `infra-pipeline-common/pipelines/variables/prd.yml` via qetza ReplaceTokens initialization in the deploy stage
 - Complex values (arrays/objects/integers) are passed as strings and converted inside Bicep using `json()`/`int()` helper variables
 

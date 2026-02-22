@@ -1,4 +1,4 @@
-using 'main.bicep'
+using 'aks.bicep'
 
 param location = '#{{ location }}'
 param resourceGroupName = '#{{ resourceGroupName }}'
@@ -13,7 +13,6 @@ param systemNodePoolVmSize = '#{{ systemNodePoolVmSize }}'
 param systemNodeCount = '#{{ systemNodeCount }}'
 param userNodePoolVmSize = '#{{ userNodePoolVmSize }}'
 param userNodePoolMinCount = '#{{ userNodePoolMinCount }}'
-param userNodePoolMaxCount = '#{{ userNodePoolMaxCount }}'
 
 param fluxExtensionName = '#{{ fluxExtensionName }}'
 param fluxReleaseNamespace = '#{{ fluxReleaseNamespace }}'

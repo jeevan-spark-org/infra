@@ -1,4 +1,4 @@
-using 'main.bicep'
+using 'network.bicep'
 
 param location = '#{{ location }}'
 param resourceGroupName = '#{{ resourceGroupName }}'

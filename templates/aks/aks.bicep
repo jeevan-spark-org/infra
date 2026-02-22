@@ -36,9 +36,6 @@ param userNodePoolVmSize string
 @description('Minimum nodes for user pool autoscaling.')
 param userNodePoolMinCount string
 
-@description('Maximum nodes for user pool autoscaling.')
-param userNodePoolMaxCount string
-
 @description('Name of the AKS Flux extension.')
 param fluxExtensionName string
 
@@ -56,7 +53,6 @@ param tags string
 
 var systemNodeCountInt = int(systemNodeCount)
 var userNodePoolMinCountInt = int(userNodePoolMinCount)
-var userNodePoolMaxCountInt = int(userNodePoolMaxCount)
 var tagsObject = json(tags)
 var fluxExtensionConfigurationSettingsObject = json(fluxExtensionConfigurationSettings)
 var fluxConfigurationsArray = json(fluxConfigurations)
@@ -134,9 +130,8 @@ module aks 'br/public:avm/res/container-service/managed-cluster:0.12.0' = {
         mode: 'User'
         type: 'VirtualMachineScaleSets'
         vmSize: userNodePoolVmSize
-        enableAutoScaling: true
-        minCount: userNodePoolMinCountInt
-        maxCount: userNodePoolMaxCountInt
+        enableAutoScaling: false
+        count: userNodePoolMinCountInt
         maxPods: 50
         osType: 'Linux'
         vnetSubnetResourceId: aksSubnet.id
