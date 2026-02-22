@@ -79,6 +79,8 @@ Network access controls are parameterized per environment:
 
 - AKS API server access is restricted with `apiServerAuthorizedIpRanges`.
 - AKS control-plane pricing tier is parameterized with `aksSkuTier` (dev: `Free`, prd: `Standard`).
+- ACR SKU is environment-tuned for cost (`Basic` in dev, `Standard` in prd).
+- Log Analytics cost controls are parameterized with `logAnalyticsSkuName`, `logAnalyticsRetentionInDays`, and `logAnalyticsDailyQuotaGb` (dev defaults: `PerGB2018`, `30`, `0.5`; prd defaults: `PerGB2018`, `90`, `-1`).
 - ACR public endpoint is enabled with selected-network firewall rules via `acrAllowedIpRules`.
 - ACR is VNet integrated through a private endpoint on `privateEndpointSubnetName`.
 
